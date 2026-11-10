@@ -42,6 +42,14 @@ func (s *TestSuite) SetupSuite() {
 	require.NotEmpty(s.T(), searchMiddle, "Задайте searchMiddle")
 	require.NotEmpty(s.T(), searchEnd, "Задайте searchEnd")
 
+	base.Precondition("Проверяем, что подстроки соответствуют названию объявления")
+	require.True(s.T(), strings.HasPrefix(existingAdTitle, searchBeginning),
+		"searchBeginning должен совпадать с началом existingAdTitle")
+	require.Contains(s.T(), existingAdTitle, searchMiddle,
+		"searchMiddle должен входить в existingAdTitle")
+	require.True(s.T(), strings.HasSuffix(existingAdTitle, searchEnd),
+		"searchEnd должен совпадать с концом existingAdTitle")
+
 	base.Precondition("Авторизуемся для поиска объявлений")
 	s.loginData = auth.Login(s.T(), os.Getenv("TEST_LOGIN"), os.Getenv("TEST_PASSWORD"))
 }
