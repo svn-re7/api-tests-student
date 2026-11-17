@@ -29,7 +29,7 @@ func TestCreateAdvertisementInvalidParameters(t *testing.T) {
 		{name: "excessive_quantity", field: "quantity", value: "101", message: "quantity must be between 1 and 100 inclusive"},
 		{name: "invalid_quantity", field: "quantity", value: "invalid", message: "cannot convert string value to int"},
 		{name: "missing_photos", field: "photos", omit: true, message: "at least 1 photo is required"},
-		{name: "too_many_photos", field: "photos", message: "3"},
+		{name: "too_many_photos", field: "photos", message: "maximum 3 photos allowed"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
