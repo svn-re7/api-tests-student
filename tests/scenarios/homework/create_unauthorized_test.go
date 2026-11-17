@@ -10,6 +10,7 @@ import (
 )
 
 func TestCreateAdvertisementUnauthorized(t *testing.T) {
+	fixtures.Environment(t)
 	for _, tc := range fixtures.AuthorizationCases() {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Log("Подготовка: валидная форма и проверяемый вариант токена")

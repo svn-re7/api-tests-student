@@ -31,12 +31,19 @@ var photo []byte
 // Login авторизует один из двух независимых аккаунтов, заданных в локальном env.
 func Login(t *testing.T, prefix string) authModels.LoginOkResponse {
 	t.Helper()
-	utils.LoadEnv()
+	Environment(t)
 	t.Logf("Подготовка: вход тестового пользователя %s", prefix)
 	result := auth.Login(t, os.Getenv(prefix+"_LOGIN"), os.Getenv(prefix+"_PASSWORD"))
 	require.NotEmpty(t, result.Token, "Авторизация не вернула токен")
 	require.NotEmpty(t, result.User.Id, "Авторизация не вернула id пользователя")
 	return result
+}
+
+// Environment загружает настройки также для сценариев, не требующих входа.
+func Environment(t *testing.T) {
+	t.Helper()
+	utils.LoadEnv()
+	t.Log("Подготовка: настройки API загружены")
 }
 
 // Users возвращает владельца объявления и отдельного пользователя избранного.
