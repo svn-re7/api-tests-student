@@ -1,7 +1,7 @@
 package advertisementSearch
 
 import (
-	"os"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -9,14 +9,17 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"api-tests-template/internal/assertions"
+	"api-tests-template/internal/managers/advertisement"
 	advList "api-tests-template/internal/managers/advertisements"
-	"api-tests-template/internal/managers/auth"
+	adModels "api-tests-template/internal/managers/advertisements/models"
 	"api-tests-template/internal/managers/auth/models"
+	"api-tests-template/internal/managers/response"
 	"api-tests-template/internal/utils"
 	base "api-tests-template/tests"
+	"api-tests-template/tests/fixtures"
 )
 
-// Объявление уже существует на стенде; тесты не создают и не удаляют его.
+// Подстроки относятся к префиксу собственной фикстуры каждого прогона.
 const (
 	existingAdTitle = "Тест названия"
 	searchBeginning = "Тест"
@@ -27,6 +30,7 @@ const (
 type TestSuite struct {
 	suite.Suite
 	loginData models.LoginOkResponse
+	adTitle   string
 }
 
 func TestSuiteRun(t *testing.T) {
@@ -51,7 +55,11 @@ func (s *TestSuite) SetupSuite() {
 		"searchEnd должен совпадать с концом existingAdTitle")
 
 	base.Precondition("Авторизуемся для поиска объявлений")
-	s.loginData = auth.Login(s.T(), os.Getenv("TEST_LOGIN"), os.Getenv("TEST_PASSWORD"))
+	s.loginData = fixtures.Login(s.T(), "TEST")
+	request := fixtures.Request()
+	request.Fields["title"] = existingAdTitle + " " + utils.RandomString(16)
+	ad := response.Decode[adModels.Advertisement](s.T(), advertisement.Create(s.T(), s.loginData.Token, request), http.StatusCreated)
+	s.adTitle = ad.Title
 }
 
 func (s *TestSuite) TearDownSuite() {
@@ -65,7 +73,7 @@ func (s *TestSuite) TestSearchByTitle() {
 		require.NotEmpty(s.T(), list.Items)
 	})
 	s.Run("Среди найденных есть наше объявление", func() {
-		assertions.ContainsAdvertisementByTitle(s.T(), list.Items, existingAdTitle)
+		assertions.ContainsAdvertisementByTitle(s.T(), list.Items, s.adTitle)
 	})
 }
 
@@ -85,7 +93,7 @@ func (s *TestSuite) TestSearchByTitle_Substring() {
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
 			list := advList.GetAdvertisementsList(s.T(), s.loginData.Token, tc.search)
-			assertions.ContainsAdvertisementByTitle(s.T(), list.Items, existingAdTitle)
+			assertions.ContainsAdvertisementByTitle(s.T(), list.Items, s.adTitle)
 		})
 	}
 }
