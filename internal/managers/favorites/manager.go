@@ -7,6 +7,7 @@ import (
 	client "api-tests-template/internal/client/http/favorites"
 	adModels "api-tests-template/internal/managers/advertisements/models"
 	"api-tests-template/internal/managers/response"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,10 +33,16 @@ func Add(t *testing.T, token string, payload any) response.Result {
 // AddAdvertisement проверяет создание избранного и его связь с объявлением.
 func AddAdvertisement(t *testing.T, token, id string) Item {
 	t.Helper()
-	item := response.Decode[Item](t, Add(t, token, map[string]string{"advertisement_id": id}), http.StatusCreated)
+	item := response.Decode[Item](t, AddID(t, token, id), http.StatusCreated)
 	require.NotEmpty(t, item.ID, "Пустой favorite_id")
 	require.Equal(t, id, item.Advertisement.ID, "В избранное добавлено другое объявление")
 	return item
+}
+
+// AddID формирует стандартное тело добавления объявления в избранное.
+func AddID(t *testing.T, token, id string) response.Result {
+	t.Helper()
+	return Add(t, token, map[string]string{"advertisement_id": id})
 }
 
 // ListRaw возвращает ответ списка для проверки авторизации.

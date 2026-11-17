@@ -13,6 +13,7 @@ import (
 	authModels "api-tests-template/internal/managers/auth/models"
 	"api-tests-template/internal/managers/response"
 	"api-tests-template/internal/utils"
+
 	"github.com/stretchr/testify/require"
 )
 

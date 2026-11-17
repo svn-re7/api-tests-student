@@ -8,6 +8,7 @@ import (
 	"api-tests-template/internal/managers/advertisement/models"
 	adModels "api-tests-template/internal/managers/advertisements/models"
 	"api-tests-template/internal/managers/response"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,10 +22,13 @@ func Create(t *testing.T, token string, data models.CreateRequest) response.Resu
 		require.NotEmpty(t, ad.ID, "Созданное объявление должно иметь id")
 		t.Cleanup(func() {
 			t.Logf("Очистка: удаление объявления %s", ad.ID)
-			deleted := response.Read(t, client.Delete(t, token, ad.ID))
-			if deleted.Status != http.StatusNotFound {
-				require.Equal(t, http.StatusNoContent, deleted.Status, "Очистка объявления %s: %s", ad.ID, deleted.Body)
+			current := response.Read(t, client.Get(t, ad.ID))
+			if current.Status == http.StatusNotFound {
+				return
 			}
+			require.Equal(t, http.StatusOK, current.Status, "Проверка перед очисткой %s: %s", ad.ID, current.Body)
+			deleted := response.Read(t, client.Delete(t, token, ad.ID))
+			require.Equal(t, http.StatusNoContent, deleted.Status, "Очистка объявления %s: %s", ad.ID, deleted.Body)
 		})
 	}
 	return result

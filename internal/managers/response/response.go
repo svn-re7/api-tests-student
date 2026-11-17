@@ -19,6 +19,15 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+const (
+	InvalidRequest = "invalid_request"
+	Unauthorized   = "unauthorized"
+	NotFound       = "not_found"
+	Forbidden      = "forbidden"
+	AlreadyExists  = "already_exists"
+	LimitReached   = "limit_reached"
+)
+
 // Read читает и закрывает HTTP-ответ, включая тело в диагностику последующих проверок.
 func Read(t *testing.T, raw *http.Response) Result {
 	t.Helper()

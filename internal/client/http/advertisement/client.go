@@ -8,6 +8,7 @@ import (
 
 	apiRunner "api-tests-template/internal/helpers/api-runner"
 	"api-tests-template/internal/managers/advertisement/models"
+
 	"github.com/stretchr/testify/require"
 )
 
