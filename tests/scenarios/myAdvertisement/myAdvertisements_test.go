@@ -2,18 +2,17 @@ package myAdvertisement
 
 import (
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
-	"api-tests-template/internal/managers/auth"
 	"api-tests-template/internal/managers/auth/models"
 	"api-tests-template/internal/managers/myAdvertisements"
 
 	base "api-tests-template/tests"
+	"api-tests-template/tests/fixtures"
 )
 
 type TestSuite struct {
@@ -29,7 +28,8 @@ func (s *TestSuite) SetupSuite() {
 	base.SetupSuite()
 
 	base.Precondition("Авторизация пользователя с кредами из переменных окружения и получение его параметров")
-	s.loginData = auth.Login(s.T(), os.Getenv("TEST_LOGIN"), os.Getenv("TEST_PASSWORD"))
+	s.loginData = fixtures.Login(s.T(), "TEST")
+	fixtures.Advertisement(s.T(), s.loginData.Token)
 }
 
 func (s *TestSuite) TearDownSuite() {
